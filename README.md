@@ -1,6 +1,6 @@
 # Automatic Fetal BPD Measurement from Ultrasound
 
-> Adapts the landmark heatmap regression method of **Collins et al. (2026)** — originally developed for fetal femur length — to automatically measure **Biparietal Diameter (BPD)** from standard trans-thalamic fetal ultrasound planes.
+> Adapts a landmark heatmap regression method to automatically measure **Biparietal Diameter (BPD)** from standard trans-thalamic fetal ultrasound planes.
 
 ---
 
