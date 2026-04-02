@@ -1,0 +1,40 @@
+# Large data — not tracked in git
+data/raw/
+data/images/
+data/masks/
+
+# Model checkpoints
+checkpoints/
+
+# Evaluation outputs
+results/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environments
+.env
+.venv
+venv/
+env/
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
