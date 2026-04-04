@@ -117,8 +117,16 @@ class BPDDataset(Dataset):
         image_rgb = np.stack([image, image, image], axis=-1)  # (H, W, 3)
 
         # ── Keypoints in original image space ──────────────────────────────
-        x_left, y_left   = float(row["x_left"]),  float(row["y_left"])
-        x_right, y_right = float(row["x_right"]), float(row["y_right"])
+        # Clamp to valid pixel range [0, dim-1] — a small number of annotations
+        # in the source dataset have coordinates marginally outside the image
+        # boundary (e.g. y=-2 when the endpoint sits at the very edge).
+        def _clamp(v: float, lo: float, hi: float) -> float:
+            return max(lo, min(hi, v))
+
+        x_left  = _clamp(float(row["x_left"]),  0.0, orig_w - 1)
+        y_left  = _clamp(float(row["y_left"]),  0.0, orig_h - 1)
+        x_right = _clamp(float(row["x_right"]), 0.0, orig_w - 1)
+        y_right = _clamp(float(row["y_right"]), 0.0, orig_h - 1)
         x_center = (x_left + x_right) / 2.0
         y_center = (y_left + y_right) / 2.0
 
@@ -165,8 +173,6 @@ class BPDDataset(Dataset):
         gt_bpd_px = math.hypot(x_right - x_left, y_right - y_left)
 
         px_to_mm = float(row.get("px_to_mm_rate", float("nan")))
-        if math.isnan(px_to_mm):
-            px_to_mm = None
 
         meta = {
             "image_path": str(row["image_path"]),

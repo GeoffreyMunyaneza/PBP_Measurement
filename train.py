@@ -12,8 +12,11 @@ Usage:
 
 import argparse
 import math
+import sys
 import time
 from pathlib import Path
+
+sys.stdout.reconfigure(encoding="utf-8")
 
 import pandas as pd
 import torch
@@ -78,7 +81,7 @@ def build_dataloaders(
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=True,
+        pin_memory=False,
         drop_last=False,
     )
     val_loader = DataLoader(
@@ -86,7 +89,7 @@ def build_dataloaders(
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=True,
+        pin_memory=False,
     )
     return train_loader, val_loader
 
@@ -114,7 +117,9 @@ def run_epoch(
             heatmaps = batch["heatmap"].to(device, non_blocking=True)
 
             preds = model(images)
-            loss  = criterion(preds, heatmaps)
+            # Apply sigmoid before MSE so predicted values are in [0,1],
+            # matching the Gaussian heatmap targets.
+            loss  = criterion(torch.sigmoid(preds), heatmaps)
 
             if train:
                 optimizer.zero_grad(set_to_none=True)
@@ -198,7 +203,6 @@ def main() -> None:
         mode="min",
         factor=0.25,
         patience=5,
-        verbose=True,
     )
     criterion = nn.MSELoss()
 
@@ -223,6 +227,7 @@ def main() -> None:
         train_loss = run_epoch(model, train_loader, criterion, optimizer, device, train=True)
         val_loss   = run_epoch(model, val_loader,   criterion, optimizer, device, train=False)
         scheduler.step(val_loss)
+        torch.cuda.empty_cache()
 
         elapsed = time.time() - t0
         current_lr = optimizer.param_groups[0]["lr"]
@@ -245,7 +250,7 @@ def main() -> None:
                 output_dir / "best.pt", model, optimizer, scheduler,
                 epoch, val_loss, best_val_loss
             )
-            print(f"         ↳ New best val loss: {best_val_loss:.6f}  (saved best.pt)")
+            print(f"           >> New best val loss: {best_val_loss:.6f}  (saved best.pt)")
 
     print("\nTraining complete.")
     print(f"Best val loss : {best_val_loss:.6f}")

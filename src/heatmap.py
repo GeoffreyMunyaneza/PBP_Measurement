@@ -80,17 +80,21 @@ def extract_peaks(
     heatmap: np.ndarray,
     nms_size: int = 21,
     threshold: float = 0.1,
+    top_k: int = 5,
 ) -> list[tuple[float, float]]:
     """
     Extract local-maximum locations from a single 2D heatmap.
 
     A pixel is a peak if it equals the maximum within a (nms_size × nms_size)
     neighbourhood AND its value is above `threshold * global_max`.
+    Returns at most `top_k` peaks (highest confidence first) to keep the
+    greedy selection algorithm tractable and accurate.
 
     Args:
         heatmap   : 2D float array (H, W).
         nms_size  : Side length of the NMS window (must be odd, ≥ 1).
         threshold : Fraction of the global maximum used as a floor.
+        top_k     : Maximum number of candidate peaks to return.
 
     Returns:
         List of (x, y) float coordinates, sorted by descending heatmap value.
@@ -110,6 +114,6 @@ def extract_peaks(
         return []
 
     values = heatmap[peak_ys, peak_xs]
-    order = np.argsort(values)[::-1]
+    order = np.argsort(values)[::-1][:top_k]
 
     return [(float(peak_xs[i]), float(peak_ys[i])) for i in order]

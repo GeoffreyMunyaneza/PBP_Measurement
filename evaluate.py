@@ -1,5 +1,5 @@
 """
-Phase 3 — Evaluation script for trained BPD heatmap regression model.
+Phase 3 - Evaluation script for trained BPD heatmap regression model.
 
 Runs inference on the test split, applies NMS + greedy endpoint selection,
 and reports all metrics from Collins et al. 2026:
@@ -16,7 +16,10 @@ Usage:
 
 import argparse
 import math
+import sys
 from pathlib import Path
+
+sys.stdout.reconfigure(encoding="utf-8")
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -104,11 +107,8 @@ def run_inference(
             orig_h   = int(metas["orig_h"][i])
             scale_x  = float(metas["scale_x"][i])   # IMG_SIZE / orig_w
             scale_y  = float(metas["scale_y"][i])   # IMG_SIZE / orig_h
-            px_to_mm = metas["px_to_mm"][i]
-            if px_to_mm is None or (isinstance(px_to_mm, float) and math.isnan(px_to_mm)):
-                px_to_mm = None
-            else:
-                px_to_mm = float(px_to_mm)
+            px_to_mm_val = float(metas["px_to_mm"][i])
+            px_to_mm = None if math.isnan(px_to_mm_val) else px_to_mm_val
 
             hm_left   = preds[i, 0]   # (H, W)
             hm_right  = preds[i, 1]
@@ -273,7 +273,7 @@ def report_results(results: list[dict], output_dir: Path) -> None:
     print("\n  Success Rate (BPD measurement error in mm)")
     for t in [0.5, 1.0, 2.0, 3.0]:
         info = sr[t]
-        print(f"    ≤ {t:3.1f} mm : {info['count']:4d} / {n_total}  ({info['pct']:.1f}%)")
+        print(f"    <= {t:3.1f} mm : {info['count']:4d} / {n_total}  ({info['pct']:.1f}%)")
     over = sr[">3.0"]
     print(f"    > 3.0 mm : {over['count']:4d} / {n_total}  ({over['pct']:.1f}%)")
 

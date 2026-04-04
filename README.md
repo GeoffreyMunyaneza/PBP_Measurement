@@ -1,6 +1,6 @@
 # Automatic Fetal BPD Measurement from Ultrasound
 
-> Adapts the landmark heatmap regression method of **Collins et al. (2026)** — originally developed for fetal femur length — to automatically measure **Biparietal Diameter (BPD)** from standard trans-thalamic fetal ultrasound planes.
+> Adapts the landmark heatmap regression method to automatically measure **Biparietal Diameter (BPD)** from standard trans-thalamic fetal ultrasound planes.
 
 ---
 
@@ -20,8 +20,6 @@ The pipeline detects two outer parietal bone endpoints and measures the Euclidea
 |-------------------------------|:---------------:|:-----------------:|
 | SegNet baseline               | 1.19 ± 2.15     | 1.04 ± 2.88       |
 | **U-Net, 3 keypoints (ours)** | **0.70 ± 0.43** | **0.56 ± 0.51**   |
-
-*(Numbers will be updated after training on this dataset.)*
 
 ---
 
