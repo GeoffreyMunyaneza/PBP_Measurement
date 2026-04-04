@@ -202,16 +202,6 @@ Each image in the dataset includes a `px_to_mm_rate` value (mm per pixel) derive
 
 ---
 
-## Reference
-
-```
-Collins, T., Munyaneza, G., et al. (2026).
-End to end automatic measurement of fetal femur length in ultrasound images.
-Surgical Data Science Department, IRCAD Institute.
-```
-
----
-
 ## License
 
 For research use only. Dataset subject to original source licenses:
